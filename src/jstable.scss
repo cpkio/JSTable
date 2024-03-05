@@ -1,6 +1,8 @@
 /*!
- * JSTable v1.6.5
+ * JSTable v2.1
  */
+
+.dt-wrapper { margin-top: 1rem; }
 
 .dt-container{
     position:relative;
@@ -29,22 +31,38 @@
         justify-content: center;
         align-items: center;
         background: linear-gradient(to right,rgba(255,255,255,0) 0,rgba(255,255,255,0.9) 25%,rgba(255,255,255,0.9) 75%,rgba(255,255,255,0) 100%);
+		z-index: 65535;
     }
+}
+
+.dt-top {
+    display: block;
+    position: relative;
+}
+
+.dt-bottom {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
 }
 
 .dt-top,
 .dt-bottom {
-    padding: 8px 10px;
-    display:flex;
-    justify-content:space-between;
 
     .dt-selector {
         padding: 6px;
     }
     .dt-info {
         margin: 7px 0;
+        font-size: 66%;
     }
 
+}
+
+.dt-top {
+    .dt-search {
+        float: right;
+    }
 }
 
 .dt-input {
@@ -109,7 +127,6 @@
             & > td, & > th{
                 vertical-align: top;
                 padding: 8px 10px;
-                white-space: nowrap;
             }
         }
     }
@@ -149,17 +166,18 @@
                 border-left: 4px solid transparent;
                 border-right: 4px solid transparent;
                 opacity: 0.2;
+				top: 10px;
             }
 
             &::before {
                 border-top: 4px solid #000;
-                top: 18px;
+                top: 22px;
             }
 
             &::after {
                 border-bottom: 4px solid #000;
                 border-top: 4px solid transparent;
-                bottom: 22px;
+                // bottom: 18px;
             }
 
             &.asc::after,
@@ -172,7 +190,21 @@
 
 }
 
-.hidden{
+.hidden {
     display:none!important;
     opacity:0!important;
+}
+
+.icon-clear {
+	position: absolute;
+	right: 0.5em;
+	color: #ccc;
+	font-size: 130%;
+}
+.icon-clear:hover {
+	color: #0060df;
+}
+
+.fa-icon-clear::before {
+	content: "\f00d";
 }

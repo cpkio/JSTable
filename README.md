@@ -1,78 +1,40 @@
-# JSTable
+# JSTable²
 
-The JSTable is a lightweight, dependency-free JavaScript plugin which makes a HTML table interactive.
+This is a mod of [JSTable](https://github.com/jstable/JSTable) with row-
+and colspanned cells sorting support.
 
-The plugin is similar to the [jQuery datatables](https://datatables.net/) but without the jQuery dependencies.
 
-The implementation is inspired by [Vanilla-DataTables](https://github.com/Mobius1/Vanilla-DataTables). Unlike Vanilla-Datatables this implementation is using the in ES6 introduced [classes](https://www.w3schools.com/js/js_classes.asp).  
-Additionally JSTable includes the possibility for server side rendering, which is inspired by [jQuery datatables](https://datatables.net/manual/server-side).
 
-You can get more information about the usage on [https://jstable.github.io/](https://jstable.github.io/).
+Previously sorting such tables broke the table rendering. Now the script
+parses the table into separate cells and renders it back to row- and
+colspanned table when sorted.
 
-## Install
+I didn't want pagination, but the original script has no way of disabling it,
+so I had to comment it out.
 
-* Clone the [github repository](https://github.com/jstable/JSTable)
-* Include the stylesheet and JavaScript files from the `dist` folder:
+Install with instructions from [JSTable](https://github.com/jstable/JSTable)
+repo.
 
-```
-<link rel="stylesheet" type="text/css" href="/dist/jstable.css">
-```
-```
-<script type="text/javascript" src="/dist/jstable.min.js"></script>
-```
-* If the target browser does not support not all ES2015+ features you need to include the `es5` version:
-```
-<script type="text/javascript" src="/dist/jstable.es5.min.js"></script>
-```
-* If the target browser does not support fetch you need to include the following polyfills:
-```
-<script type="text/javascript" src="/dist/polyfill-fetch.min.js"></script>
-```
-
-## Initialize
-
-The HTML table needs a `thead` and `tbody` section.
-
-#### Example table
-```
-<table id="basic">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Country</th>
-            <th>Date</th>
-            <th>Number</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Norman Small</td>
-            <td>Tokelau</td>
-            <td>2020-02-01 07:22:40</td>
-            <td>8243</td>
-        </tr>
-            ...
-    </tbody>
-</table>
-```
-
-#### JavaScript
-
-The JSTable can be initialized by passing a reference or a CSS3 selector as string:
-```
-let myTable = new JSTable("#basic");
-```
-or
-```
-let table = document.getElementById('basic');
-let myTable = new JSTable(table);
-```
-[Options](https://jstable.github.io/options.html) can be passed as second argument:
+This has been integrated into Antora as table sorting and filtering solution:
 
 ```
-let myTable = new JSTable("#basic", {
+<script>
+for ( tbl of document.querySelectorAll('table.tableblock') ) {
+  new JSTable(tbl, {
     sortable: true,
-    searchable: false,
-    ...
-});
+    searchable: true,
+    addQueryParams: false,
+    layout: { top: '{search}', bottom: '{info}' },
+    labels: {
+      placeholder: 'Поиск…',
+      noRows: 'Ничего не найдено',
+      info: 'Всего {rows}',
+      loading: 'Загрузка…',
+      infoFiltered: 'Показано {rows} из {rowsTotal}'
+    },
+  });
+}
+</script>
 ```
+
+This will not work for inner tables (tables inside tables).

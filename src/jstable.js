@@ -1,24 +1,25 @@
+// vim:shiftwidth=4
 /*!
- * JSTable v1.6.5
+ * JSTable v2.1
  */
 
 const JSTableDefaultConfig = {
-    perPage: 5,
-    perPageSelect: [5, 10, 15, 20, 25],
+    // perPage: 5,
+    // perPageSelect: [5, 10, 15, 20, 25],
 
     sortable: true,
     searchable: true,
 
     // Pagination
-    nextPrev: true,
-    firstLast: false,
-    prevText: "&lsaquo;",
-    nextText: "&rsaquo;",
-    firstText: "&laquo;",
-    lastText: "&raquo;",
-    ellipsisText: "&hellip;",
-    truncatePager: true,
-    pagerDelta: 2,
+    // nextPrev: true,
+    // firstLast: false,
+    // prevText: "&lsaquo;",
+    // nextText: "&rsaquo;",
+    // firstText: "&laquo;",
+    // lastText: "&raquo;",
+    // ellipsisText: "&hellip;",
+    // truncatePager: true,
+    // pagerDelta: 2,
 
     classes: {
         top: "dt-top",
@@ -33,15 +34,17 @@ const JSTableDefaultConfig = {
         ellipsis: "dt-ellipsis",
         selector: "dt-selector",
         container: "dt-container",
-        pagination: "dt-pagination",
+        // pagination: "dt-pagination",
         loading: "dt-loading",
-        message: "dt-message"
+        message: "dt-message",
+        iconClear: "icon-clear",
+        faIconClear: "fa-times"
     },
 
     // Customise the display text
     labels: {
         placeholder: "Search...",
-        perPage: "{select} entries per page",
+        // perPage: "{select} entries per page",
         noRows: "No entries found",
         info: "Showing {start} to {end} of {rows} entries",
         loading: "Loading...",
@@ -50,8 +53,8 @@ const JSTableDefaultConfig = {
 
     // Customise the layout
     layout: {
-        top: "{select}{search}",
-        bottom: "{info}{pager}"
+        top: "{search}",
+        bottom: "{info}"
     },
 
     // server side
@@ -64,11 +67,11 @@ const JSTableDefaultConfig = {
     ajaxParams: {},
     // query params names
     queryParams: {
-        page: 'page',
+        // page: 'page',
         search: 'search',
         sortColumn: 'sortColumn',
         sortDirection: 'sortDirection',
-        perPage: 'perPage'
+        // perPage: 'perPage'
     },
     // append query params on events
     addQueryParams: true,
@@ -95,6 +98,7 @@ class JSTable {
 
         this.config = this._merge(JSTableDefaultConfig, config);
         this.table = new JSTableElement(DOMElement);
+        if (this.table.header === undefined) { console.warn("Table has no header, exiting"); return }
 
         // reset values
         this.currentPage = 1;
@@ -110,7 +114,7 @@ class JSTable {
 
 
         // init pager
-        this.pager = new JSTablePager(this);
+        // this.pager = new JSTablePager(this);
 
         // build wrapper and layout
         this._build();
@@ -151,38 +155,39 @@ class JSTable {
         );
 
         // Per Page Select
-        if (options.perPageSelect) {
-            var wrap = [
-                "<div class='", options.classes.dropdown, "'>",
-                "<label>", options.labels.perPage, "</label>",
-                "</div>"
-            ].join("");
-
-            // Create the select
-            var select = document.createElement("select");
-            select.className = options.classes.selector;
-
-            // Create the options
-            options.perPageSelect.forEach(function (val) {
-                var selected = val === options.perPage;
-                var option = new Option(val, val, selected, selected);
-                select.add(option);
-            });
-
-            // Custom label
-            wrap = wrap.replace("{select}", select.outerHTML);
-
-            // Selector placement
-            inner = inner.replace(/\{select\}/g, wrap);
-        } else {
-            inner = inner.replace(/\{select\}/g, "");
-        }
+        // if (options.perPageSelect) {
+        //     var wrap = [
+        //         "<div class='", options.classes.dropdown, "'>",
+        //         "<label>", options.labels.perPage, "</label>",
+        //         "</div>"
+        //     ].join("");
+        //
+        //     // Create the select
+        //     var select = document.createElement("select");
+        //     select.className = options.classes.selector;
+        //
+        //     // Create the options
+        //     options.perPageSelect.forEach(function (val) {
+        //         var selected = val === options.perPage;
+        //         var option = new Option(val, val, selected, selected);
+        //         select.add(option);
+        //     });
+        //
+        //     // Custom label
+        //     wrap = wrap.replace("{select}", select.outerHTML);
+        //
+        //     // Selector placement
+        //     inner = inner.replace(/\{select\}/g, wrap);
+        // } else {
+        //     inner = inner.replace(/\{select\}/g, "");
+        // }
 
         // Searchable
         if (options.searchable) {
             var form = [
                 "<div class='", options.classes.search, "'>",
                 "<input class='", options.classes.input, "' placeholder='", options.labels.placeholder, "' type='text'>",
+                "<span class='", options.classes.iconClear, "'><i class='fa ", options.classes.faIconClear, "' title=''></i></span>",
                 "</div>"
             ].join("");
 
@@ -198,10 +203,10 @@ class JSTable {
 
         // Pager
 
-        inner = inner.replace(
-            "{pager}",
-            "<div class='" + options.classes.pagination + "'></div>"
-        );
+        // inner = inner.replace(
+        //     "{pager}",
+        //     "<div class='" + options.classes.pagination + "'></div>"
+        // );
 
         this.wrapper.innerHTML = inner;
 
@@ -210,7 +215,7 @@ class JSTable {
         let container = this.wrapper.querySelector("." + options.classes.container);
         container.appendChild(this.table.element);
 
-        this._updatePagination();
+        // this._updatePagination();
         this._updateInfo();
 
     }
@@ -219,9 +224,9 @@ class JSTable {
         var that = this;
 
         // no overlap please
-        if (this.currentPage > this.pager.getPages()) {
-            this.currentPage = this.pager.getPages();
-        }
+        // if (this.currentPage > this.pager.getPages()) {
+        //     this.currentPage = this.pager.getPages();
+        // }
 
         let loading = that.wrapper.querySelector(" ." + that.config.classes.loading);
         loading.classList.remove("hidden");
@@ -235,7 +240,7 @@ class JSTable {
                 th.className = tableHeaderCell.classes.join(" ");
             }
             for (let attr in tableHeaderCell.attributes) {
-                th.setAttribute(attr, tableHeaderCell.attributes[attr]);
+                if (attr != "class") { th.setAttribute(attr, tableHeaderCell.attributes[attr]); }
             }
             th.setAttribute("data-sortable", tableHeaderCell.isSortable);
         });
@@ -243,14 +248,41 @@ class JSTable {
         if (reloadData) {
 
             // Change Table Body
-            return this.getPageData(this.currentPage).then(function (data) {
+            return this.getPageData().then(function (data) {
 
                 that.table.element.classList.remove("hidden");
                 that.table.body.innerHTML = "";
+                // 21.02.2024 12:43 Проверено: передается сетка
+                // N × N с `rowspan` и `colspan` == 1
 
-                data.forEach(function (row) {
-                    that.table.body.appendChild(row.getFormatted(that.columnRenderers, that.config.rowAttributesCreator));
-                });
+                if (data.length) {
+                    let spanCounter = Array(data[0].cells.length).fill(0);
+                    data.reduceRight( (accumulator, current, index, array) => {
+                        let thisRow = [];
+                        for (var column = 0; column < current.cells.length; column++) {
+                            let thisCell = current.cells[column];
+                            let prevCell = index > 0 ? array[index-1].cells[column] : undefined;
+                            if (thisCell == prevCell) {
+                                spanCounter[column] += 1;
+                            } else {
+                                thisCell.addAttribute('rowspan', spanCounter[column] + 1);
+                                spanCounter[column] = 0;
+                                thisRow.push(thisCell);
+                            }
+                        }
+
+                        let thisJSTableRow = current;
+                        thisJSTableRow.cellsOrig = thisJSTableRow.cells;
+                        thisJSTableRow.cells = thisRow; 
+                        accumulator.push(
+                            thisJSTableRow.getFormatted(that.columnRenderers, that.config.rowAttributesCreator)
+                        );
+                        return accumulator;
+
+                    }, []).reverse().forEach(function (row) {
+                        that.table.body.appendChild(row);
+                    });
+                }
 
                 loading.classList.add("hidden");
 
@@ -265,7 +297,7 @@ class JSTable {
                 that._emit("update");
 
             }).then(function () {
-                that._updatePagination();
+                // that._updatePagination();
                 that._updateInfo();
             });
         }
@@ -288,14 +320,14 @@ class JSTable {
         }
     }
 
-    _updatePagination() {
-        // change Pagination
-        let pagination = this.wrapper.querySelector(" ." + this.config.classes.pagination);
-        pagination.innerHTML = "";
-        pagination.appendChild(this.pager.render(this.currentPage));
-
-
-    }
+    // _updatePagination() {
+    //     // change Pagination
+    //     let pagination = this.wrapper.querySelector(" ." + this.config.classes.pagination);
+    //     pagination.innerHTML = "";
+    //     pagination.appendChild(this.pager.render(this.currentPage));
+    //
+    //
+    // }
 
     _updateInfo() {
         // change info
@@ -304,10 +336,10 @@ class JSTable {
         let infoString = this.isSearching ? this.config.labels.infoFiltered : this.config.labels.info;
         if (info && infoString.length) {
             var string = infoString
-                .replace("{start}", this.getDataCount() > 0 ? this._getPageStartIndex() + 1 : 0)
-                .replace("{end}", this._getPageEndIndex() + 1)
-                .replace("{page}", this.currentPage)
-                .replace("{pages}", this.pager.getPages())
+                // .replace("{start}", this.getDataCount() > 0 ? this._getPageStartIndex() + 1 : 0)
+                // .replace("{end}", this._getPageEndIndex() + 1)
+                // .replace("{page}", this.currentPage)
+                // .replace("{pages}", this.pager.getPages())
                 .replace("{rows}", this.getDataCount())
                 .replace("{rowsTotal}", this.getDataCountTotal());
 
@@ -315,13 +347,13 @@ class JSTable {
         }
     }
 
-    _getPageStartIndex() {
-        return (this.currentPage - 1) * this.config.perPage;
-    }
-    _getPageEndIndex() {
-        let end = this.currentPage * this.config.perPage - 1;
-        return end > this.getDataCount() - 1 ? this.getDataCount() - 1 : end;
-    }
+    // _getPageStartIndex() {
+    //     return (this.currentPage - 1) * this.config.perPage;
+    // }
+    // _getPageEndIndex() {
+    //     let end = this.currentPage * this.config.perPage - 1;
+    //     return end > this.getDataCount() - 1 ? this.getDataCount() - 1 : end;
+    // }
 
     _getData() {
         this._emit("getData", this.table.dataRows);
@@ -337,8 +369,8 @@ class JSTable {
             "searchQuery": this.searchQuery,
             "sortColumn": this.sortColumn,
             "sortDirection": this.sortDirection,
-            "start": this._getPageStartIndex(),
-            "length": this.config.perPage,
+            // "start": this._getPageStartIndex(),
+            // "length": this.config.perPage,
             "datatable": 1
         };
 
@@ -407,13 +439,9 @@ class JSTable {
 
 
         // filter the table data and return a promise
-        let start_idx = this._getPageStartIndex();
-        var end_idx = this._getPageEndIndex();
-        return Promise.resolve(this._getData()).then(function (data) {
-            return data.filter(function (row, idx) {
-                return idx >= start_idx && idx <= end_idx;
-            });
-        });
+        // let start_idx = this._getPageStartIndex();
+        // var end_idx = this._getPageEndIndex();
+        return Promise.resolve(this._getData());
     }
 
     async search(query) {
@@ -560,14 +588,14 @@ class JSTable {
 
     }
 
-    async paginate(new_page) {
-        var that = this;
-
-        this.currentPage = new_page;
-        return this.update().then(function () {
-            that._emit("paginate", that.currentPage, new_page);
-        });
-    }
+    // async paginate(new_page) {
+    //     var that = this;
+    //
+    //     this.currentPage = new_page;
+    //     return this.update().then(function () {
+    //         that._emit("paginate", that.currentPage, new_page);
+    //     });
+    // }
 
     _setQueryParam(key, value) {
       if (!this.config.addQueryParams) return;
@@ -584,13 +612,13 @@ class JSTable {
         this.wrapper.addEventListener("click", function (event) {
             var node = event.target;
 
-            if (node.hasAttribute("data-page")) {
-                event.preventDefault();
-                let new_page = parseInt(node.getAttribute("data-page"), 10);
-                that.paginate(new_page);
-
-                that._setQueryParam('page', new_page)
-            }
+            // if (node.hasAttribute("data-page")) {
+            //     event.preventDefault();
+            //     let new_page = parseInt(node.getAttribute("data-page"), 10);
+            //     that.paginate(new_page);
+            //
+            //     that._setQueryParam('page', new_page)
+            // }
 
             if (node.nodeName === "TH" && node.hasAttribute("data-sortable")) {
 
@@ -606,20 +634,20 @@ class JSTable {
             }
         });
 
-        if (this.config.perPageSelect) {
-            this.wrapper.addEventListener("change", function (e) {
-                var node = e.target;
-                if (node.nodeName === "SELECT" && node.classList.contains(that.config.classes.selector)) {
-                    e.preventDefault();
-                    let value = parseInt(node.value, 10);
-                    that._emit("perPageChange", that.config.perPage, value);
-                    that.config.perPage = value;
-                    that.update();
-
-                    that._setQueryParam('perPage', value)
-                }
-            });
-        }
+        // if (this.config.perPageSelect) {
+        //     this.wrapper.addEventListener("change", function (e) {
+        //         var node = e.target;
+        //         if (node.nodeName === "SELECT" && node.classList.contains(that.config.classes.selector)) {
+        //             e.preventDefault();
+        //             let value = parseInt(node.value, 10);
+        //             that._emit("perPageChange", that.config.perPage, value);
+        //             that.config.perPage = value;
+        //             that.update();
+        //
+        //             that._setQueryParam('perPage', value)
+        //         }
+        //     });
+        // }
 
         if (this.config.searchable) {
             this.wrapper.addEventListener("keyup", function (e) {
@@ -628,6 +656,17 @@ class JSTable {
                     that.search(e.target.value);
 
                     that._setQueryParam('search', e.target.value)
+                }
+            });
+
+            this.wrapper.addEventListener("click", function (e) {
+                if (e.target.nodeName === "I" && e.target.classList.contains(that.config.classes.faIconClear)) {
+                    e.preventDefault();
+                    let input = this.getElementsByClassName('dt-input')[0];
+                    input.value = '';
+                    input.focus();
+                    that.search('');
+                    that._setQueryParam('search', '')
                 }
             });
         }
@@ -829,10 +868,10 @@ class JSTable {
         }
 
         // parse page param and navigate to page
-        let page = urlParams.get(this.config.queryParams.page);
-        if (page) {
-            await this.paginate(parseInt(page));
-        }
+        // let page = urlParams.get(this.config.queryParams.page);
+        // if (page) {
+        //     await this.paginate(parseInt(page));
+        // }
 
         let sortColumn = urlParams.get(this.config.queryParams.sortColumn);
         if (sortColumn) {
@@ -857,13 +896,16 @@ class JSTableElement {
         //let table = this.element.cloneNode(true);
 
         // Process table rows 
-        this.rows = Array.from(this.element.rows).map(function (row, rowID) {
-            return new JSTableRow(row, row.parentNode.nodeName, rowID);
-        });
+        this.rows = [];
+        var _arr = Array.from(this.element.rows);
+        for (var i = 0; i < _arr.length; i++) {
+            this.rows.push(
+                new JSTableRow(_arr[i], _arr[i].parentNode.nodeName, i, this.rows[i-1])
+            )
+        }
 
         this.dataRows = this._getBodyRows();
         this.header = this._getHeaderRow();
-
     }
 
     _getBodyRows() {
@@ -892,11 +934,38 @@ class JSTableElement {
 
 class JSTableRow {
 
-    constructor(element, parentName = "", rowID = null) {
-        // Process row cells 
-        this.cells = Array.from(element.cells).map(function (cell) {
-            return new JSTableCell(cell);
-        });
+    constructor(element, parentName = "", rowID = null, previousRow) {
+        let _arr = Array.from(element.cells);
+        if (previousRow) {
+            this.cells = [];
+            previousRow.cells.forEach( (cell) => {
+                if (cell.attributes.rowspan > 1) {
+                    cell.decreaseRowSpan();
+                    this.cells.push(cell); // Если в предыдущем ряду есть нефинальный rowspan
+                }
+                else {
+                    if (_arr.length) this.cells.push( new JSTableCell( _arr.shift() ));
+                }
+            });
+        } else {
+            // Process row cells 
+            this.cells = _arr.map(function (cell) {
+                return new JSTableCell(cell);
+            });
+        }
+
+        this.cells = this.cells.reduce( (accumulator, current, index, array) => {
+            if (current.attributes.colspan == 1) {
+                accumulator.push(current) 
+            } else {
+                let _temp = Array(Number(current.attributes.colspan)).fill(current).map( (cell) => {
+                    cell.attributes.colspan = 1;
+                    return cell;
+                });
+                accumulator = accumulator.concat(_temp);
+            }
+            return accumulator;
+        }, []);
 
         this.d = this.cells.length;
 
@@ -970,7 +1039,9 @@ class JSTableRow {
             tr.setAttribute(attrName, rowAttributes[attrName])
         }
 
-        this.getCells().forEach(function (cell, idx) {
+        const arr = this.getCells()
+        for (var idx = 0; idx < arr.length; idx++) {
+            let cell = arr[idx];
             var td = document.createElement('td');
             td.innerHTML = cell.getInnerHTML();
             if (columnRenderers.hasOwnProperty(idx)) {
@@ -982,10 +1053,21 @@ class JSTableRow {
             for (let attr in cell.attributes) {
                 td.setAttribute(attr, cell.attributes[attr]);
             }
-            tr.appendChild(td);
-        });
-        return tr;
 
+            // TODO Здесь содержится важное допущение, что одинаковые ячейки
+            // идут подряд, а не вразнобой
+            let _dupes = arr.filter( (c) => c === cell ).length
+            if (_dupes > 1 && idx > arr.indexOf(cell)) { // дубли есть, но мы НЕ на первом
+                continue;
+            }
+            if (_dupes > 1 && idx == arr.indexOf(cell)) { // дубли есть, но мы на первом
+                td.setAttribute('colspan', _dupes);
+            }
+            tr.appendChild(td);
+        }
+        that.cells = that.cellsOrig;
+        that.cellsOrig = null;
+        return tr;
     }
 
     setCellClass(cell, className) {
@@ -998,8 +1080,8 @@ class JSTableCell {
     constructor(element) {
         this.textContent = element.textContent;
         this.innerHTML = element.innerHTML;
-        this.className = "";
-        this.element = element;
+        this.className = element.className;
+        // this.element = element;
 
         this.hasSortable = element.hasAttribute("data-sortable");
         this.isSortable = this.hasSortable ? element.getAttribute("data-sortable") === "true" : null;
@@ -1009,12 +1091,14 @@ class JSTableCell {
 
         this.classes = [];
 
+        this.attributes = {};
         var that = this;
         // parse attributes
-        this.attributes = {};
         [...element.attributes].forEach(function (attr) {
             that.attributes[attr.name] = attr.value;
         });
+        if (that.attributes.rowspan === undefined) { that.addAttribute('rowspan', 1) } else { that.addAttribute('rowspan', Number(that.attributes.rowspan)) } // принудительно зададим атрибут rowspan = 1
+        if (that.attributes.colspan === undefined) { that.addAttribute('colspan', 1) } else { that.addAttribute('colspan', Number(that.attributes.colspan)) } // принудительно зададим атрибут colspan = 1
     }
 
     getElement() {
@@ -1053,121 +1137,125 @@ class JSTableCell {
     addAttribute(key, value) {
         this.attributes[key] = value;
     }
+
+    decreaseRowSpan() {
+        if (this.attributes.rowspan > 1) { this.addAttribute('rowspan', this.attributes.rowspan - 1); }
+    }
 }
 
-class JSTablePager {
-
-    constructor(instance) {
-        this.instance = instance;
-    }
-
-    getPages() {
-        let pages = Math.ceil(this.instance.getDataCount() / this.instance.config.perPage);
-        return pages === 0 ? 1 : pages;
-    }
-
-    render() {
-        var options = this.instance.config;
-        let pages = this.getPages();
-
-        let ul = document.createElement("ul");
-        if (pages > 1) {
-
-            let prev = this.instance.currentPage === 1 ? 1 : this.instance.currentPage - 1,
-                next = this.instance.currentPage === pages ? pages : this.instance.currentPage + 1;
-
-            // first button
-            if (options.firstLast) {
-                ul.appendChild(this.createItem("pager", 1, options.firstText));
-            }
-
-            // prev button
-            if (options.nextPrev) {
-                ul.appendChild(this.createItem("pager", prev, options.prevText));
-            }
-
-            var pager = this.truncate();
-            // append the links
-            pager.forEach(function (btn) {
-                ul.appendChild(btn);
-            });
-
-            // next button
-            if (options.nextPrev) {
-                ul.appendChild(this.createItem("pager", next, options.nextText));
-            }
-
-            // first button
-            if (options.firstLast) {
-                ul.appendChild(this.createItem("pager", pages, options.lastText));
-            }
-
-
-        }
-        return ul;
-
-    }
-
-    createItem(className, pageNum, content, ellipsis) {
-        let item = document.createElement("li");
-        item.className = className;
-        item.innerHTML = !ellipsis ? '<a href="#" data-page="' + pageNum + '">' + content + "</a>" : '<span>' + content + "</span>";
-        return item;
-    }
-
-    isValidPage(page) {
-        return page > 0 && page <= this.getPages();
-    }
-
-    truncate() {
-        var that = this,
-            options = that.instance.config,
-            delta = options.pagerDelta * 2,
-            currentPage = that.instance.currentPage,
-            left = currentPage - options.pagerDelta,
-            right = currentPage + options.pagerDelta,
-            totalPages = this.getPages(),
-            range = [],
-            pager = [],
-            lastIndex;
-
-        if (!this.instance.config.truncatePager) {
-            for (let i = 1; i <= this.getPages(); i++) {
-                pager.push(this.createItem(i === currentPage ? "active" : "", i, i));
-            }
-
-        } else {
-            if (currentPage < 4 - options.pagerDelta + delta) {
-                right = 3 + delta;
-            } else if (currentPage > this.getPages() - (3 - options.pagerDelta + delta)) {
-                left = this.getPages() - (2 + delta);
-            }
-
-            // Get the links that will be visible
-            for (var i = 1; i <= totalPages; i++) {
-                if (i === 1 || i === totalPages || (i >= left && i <= right)) {
-                    range.push(i);
-                }
-            }
-
-            range.forEach(function (index) {
-                if (lastIndex) {
-                    if (index - lastIndex == 2) {
-                        pager.push(that.createItem("", lastIndex + 1, lastIndex + 1));
-                    } else if (index - lastIndex != 1) {
-                        // Create ellipsis node
-                        pager.push(that.createItem(options.classes.ellipsis, 0, options.ellipsisText, true));
-                    }
-                }
-
-                pager.push(that.createItem(index == currentPage ? "active" : "", index, index));
-                lastIndex = index;
-            });
-        }
-
-        return pager;
-    }
-
-}
+// class JSTablePager {
+//
+//     constructor(instance) {
+//         this.instance = instance;
+//     }
+//
+//     getPages() {
+//         let pages = Math.ceil(this.instance.getDataCount() / this.instance.config.perPage);
+//         return pages === 0 ? 1 : pages;
+//     }
+//
+//     render() {
+//         var options = this.instance.config;
+//         let pages = this.getPages();
+//
+//         let ul = document.createElement("ul");
+//         if (pages > 1) {
+//
+//             let prev = this.instance.currentPage === 1 ? 1 : this.instance.currentPage - 1,
+//                 next = this.instance.currentPage === pages ? pages : this.instance.currentPage + 1;
+//
+//             // first button
+//             if (options.firstLast) {
+//                 ul.appendChild(this.createItem("pager", 1, options.firstText));
+//             }
+//
+//             // prev button
+//             if (options.nextPrev) {
+//                 ul.appendChild(this.createItem("pager", prev, options.prevText));
+//             }
+//
+//             var pager = this.truncate();
+//             // append the links
+//             pager.forEach(function (btn) {
+//                 ul.appendChild(btn);
+//             });
+//
+//             // next button
+//             if (options.nextPrev) {
+//                 ul.appendChild(this.createItem("pager", next, options.nextText));
+//             }
+//
+//             // first button
+//             if (options.firstLast) {
+//                 ul.appendChild(this.createItem("pager", pages, options.lastText));
+//             }
+//
+//
+//         }
+//         return ul;
+//
+//     }
+//
+//     createItem(className, pageNum, content, ellipsis) {
+//         let item = document.createElement("li");
+//         item.className = className;
+//         item.innerHTML = !ellipsis ? '<a href="#" data-page="' + pageNum + '">' + content + "</a>" : '<span>' + content + "</span>";
+//         return item;
+//     }
+//
+//     isValidPage(page) {
+//         return page > 0 && page <= this.getPages();
+//     }
+//
+//     truncate() {
+//         var that = this,
+//             options = that.instance.config,
+//             delta = options.pagerDelta * 2,
+//             currentPage = that.instance.currentPage,
+//             left = currentPage - options.pagerDelta,
+//             right = currentPage + options.pagerDelta,
+//             totalPages = this.getPages(),
+//             range = [],
+//             pager = [],
+//             lastIndex;
+//
+//         if (!this.instance.config.truncatePager) {
+//             for (let i = 1; i <= this.getPages(); i++) {
+//                 pager.push(this.createItem(i === currentPage ? "active" : "", i, i));
+//             }
+//
+//         } else {
+//             if (currentPage < 4 - options.pagerDelta + delta) {
+//                 right = 3 + delta;
+//             } else if (currentPage > this.getPages() - (3 - options.pagerDelta + delta)) {
+//                 left = this.getPages() - (2 + delta);
+//             }
+//
+//             // Get the links that will be visible
+//             for (var i = 1; i <= totalPages; i++) {
+//                 if (i === 1 || i === totalPages || (i >= left && i <= right)) {
+//                     range.push(i);
+//                 }
+//             }
+//
+//             range.forEach(function (index) {
+//                 if (lastIndex) {
+//                     if (index - lastIndex == 2) {
+//                         pager.push(that.createItem("", lastIndex + 1, lastIndex + 1));
+//                     } else if (index - lastIndex != 1) {
+//                         // Create ellipsis node
+//                         pager.push(that.createItem(options.classes.ellipsis, 0, options.ellipsisText, true));
+//                     }
+//                 }
+//
+//                 pager.push(that.createItem(index == currentPage ? "active" : "", index, index));
+//                 lastIndex = index;
+//             });
+//         }
+//
+//         return pager;
+//     }
+//
+// }
 
 window.JSTable = JSTable;
