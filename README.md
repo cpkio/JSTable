@@ -3,7 +3,7 @@
 This is a mod of [JSTable](https://github.com/jstable/JSTable) with row-
 and colspanned cells sorting support.
 
-
+![2024-03-05_09-01-43](https://github.com/cpkio/JSTable/assets/1917113/66c4dbbe-a16b-4943-b94a-ba29d7535588)
 
 Previously sorting such tables broke the table rendering. Now the script
 parses the table into separate cells and renders it back to row- and
