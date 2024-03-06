@@ -15,8 +15,27 @@ so I had to comment it out.
 Install with instructions from [JSTable](https://github.com/jstable/JSTable)
 repo.
 
-This has been integrated into Antora as table sorting and filtering solution:
+## Antora integration
 
+This has been integrated into Antora-UI as table sorting and filtering solution:
+
+### Build and install
+
+* run `gulp sass` and `gulp uglify` in JSTable folder to get `.js` and `.css`
+  files in `dist` folder
+* copy `jstable.es5.min.js` to `antora-ui\src\js\vendor\jstable.es5.min.js`
+* copy `jstable.css` to `antora-ui\src\css\vendor\jstable.css`
+
+### Load script
+
+`src/partials/head-scripts.hbs`
+```
+<script src="{{{uiRootPath}}}/js/vendor/jstable.es5.js"></script>
+```
+
+### Call script on any standalone table
+
+`src/partials/footer-scripts.hbs`
 ```
 <script>
 for ( tbl of document.querySelectorAll('table.tableblock') ) {
@@ -37,4 +56,5 @@ for ( tbl of document.querySelectorAll('table.tableblock') ) {
 </script>
 ```
 
-This will not work for inner tables (tables inside tables).
+JSTable² will not work for inner tables (tables inside tables), as original
+JSTable did not. Tables with no header rows are skipped on load.
